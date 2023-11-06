@@ -5,6 +5,8 @@ import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+import javax.imageio.IIOException;
+
 /**
  * Implementation of {@link MonthSorter}.
  */
@@ -36,30 +38,24 @@ public final class MonthSorterNested implements MonthSorter {
         }
         
         public static Month fromString(final String myName) {
-            if (myName == "JANUARY") {
-                return Month.JANUARY;
-            } else if (myName == "FEBRUARY") {
-                return Month.FEBRUARY;
-            } else if (myName == "MARCH") {
-                return Month.MARCH;
-            } else if (myName == "APRIL") {
-                return Month.APRIL;
-            } else if (myName == "MAY") {
-                return Month.MAY;
-            } else if (myName == "JUNE") {
-                return Month.JUNE;
-            } else if (myName == "JULY") {
-                return Month.JULY;
-            } else if (myName == "SEPTEMBER") {
-                return Month.SEPTEMBER;
-            } else if (myName == "OCTOBER") {
-                return Month.OCTOBER;
-            } else if (myName == "NOVEMBER") {
-                return Month.NOVEMBER;
-            } else if (myName == "DECEMBER") {
-                return Month.DECEMBER;
+            try {
+                return valueOf(myName);                                         //Tries to see if string passed by parameter is already matching.
+            } catch (IllegalArgumentException e) {
+                Month result = null;
+                for (Month currentMonth : values()) {                           //iterating the values contained into my enum.
+                    if (currentMonth.toString().toLowerCase(Locale.ROOT).startsWith(myName.toLowerCase(Locale.ROOT))) {
+                        if (result != null) {
+                            throw new IllegalArgumentException(
+                                "Your input is ambigous ( " + myName + " ). I cannot decide.");
+                        } 
+                        result = currentMonth;
+                    }
+                }
+                if (result == null) {
+                    throw new IllegalArgumentException("No matching, sorry");
+                }
+                return result;
             }
-            throw new NoSuchElementException();
         }
     }
 
